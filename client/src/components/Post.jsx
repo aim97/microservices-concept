@@ -14,7 +14,15 @@ const useStyles = makeStyles({
   root: {
     margin: 5,
     maxWidth: 345,
+    flexDirection: 'column',
+    display: 'flex'
   },
+  grow: {
+    display: 'flex',
+    flexGrow: 1,
+    flexDirection: 'column',
+    width: '100%'
+  }
 });
 
 export default function Post({ postId, content, comments }) {
@@ -22,7 +30,7 @@ export default function Post({ postId, content, comments }) {
 
   return (
     <Card className={classes.root}>
-      <CardActionArea>
+      <CardActionArea className={classes.grow}>
         <CardMedia
           component="img"
           alt="Contemplative Reptile"
@@ -30,7 +38,7 @@ export default function Post({ postId, content, comments }) {
           image={`https://picsum.photos/seed/${postId}/500`}
           title="Random pic"
         />
-        <CardContent>
+        <CardContent className={classes.grow}>
           <Typography gutterBottom variant="h6" component="h2">
              {content}
           </Typography>

@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "nodemon -r esm index.js"
+    "start": "nodemon -r esm index.js"
   },
   "author": "aim97",
   "license": "ISC",

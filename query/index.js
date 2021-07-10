@@ -2,8 +2,7 @@ import App from 'express';
 import cors from 'cors';
 import R from 'ramda';
 import { json } from 'body-parser';
-
-const whitelist = ["http://localhost:3000"];
+import axios from 'axios';
 
 const app = App();
 
@@ -26,18 +25,25 @@ const handleNewComment = (postId, comment) => {
   posts[postId].comments.push(comment);
 };
 
-app.post('/event', (req, res) => {
-  const { type, content } = req.body;
-  console.log(req.body);
+const handleEvent = ({ type, content }) => {
   R.cond([
     [R.equals('postCreated'), () => handleNewPost(content)],
     [R.equals('commentCreated'), () => handleNewComment(content.postId, content)],
   ])(type);
+}
+
+app.post('/event', (req, res) => {
+  console.log(req.body);
+  
+  handleEvent(req.body);
 
   res.status(200).send({});
 });
 
 
-app.listen(4002, () => {
-  console.log('listening on port 4002');
+app.listen(4002, async () => {
+  console.log('listening on port 4002\nInitializing service ...');
+  const res = await axios.get('http://localhost:5000/hist');
+  console.log(res.data);
+  R.map(handleEvent, res.data);
 });

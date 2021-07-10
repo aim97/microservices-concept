@@ -25,8 +25,10 @@ app.get('/hist', async (req, res) => {
 app.post('/event', async (req, res) => {
   const event = req.body;
   events.push(event);
-  await Promise.all(servicesEventRoutes.map((route) => axios.post(route, event)));
-
+  await Promise.all(servicesEventRoutes.map((route) => {
+    const res = axios.post(route, event);
+    res.catch(() => console.log('it seems we couldn\'t reach ' + route));
+  }));
   res.status(200).send({});
 });
 
