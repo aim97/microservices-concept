@@ -25,11 +25,21 @@ const handleNewComment = (postId, comment) => {
   posts[postId].comments.push(comment);
 };
 
+const removeComment = (postId, id) => {
+  const idx = posts[postId].comments.find((comment) => comment.id === id);
+  posts[postId].comments.splice(idx, 1);
+}
+
 const handleEvent = ({ type, content }) => {
   R.cond([
     [R.equals('postCreated'), () => handleNewPost(content)],
     [R.equals('commentCreated'), () => handleNewComment(content.postId, content)],
+    [R.equals('commentUpdated'), () => {
+      removeComment(content.postId, content.id);
+      handleNewComment(content.postId, content);
+    }]
   ])(type);
+  console.log(posts);
 }
 
 app.post('/event', (req, res) => {

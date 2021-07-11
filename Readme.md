@@ -27,6 +27,9 @@ A simple site that provides the following features
         | **job** | create a new post |  
         | **body** | {content: string} |  
         | **reponse** | Post object created |  
+   * **Events of intesert**: None
+   * **Events emitted**:
+     * *Post Created*: {type: `'postCreated'`, content: {id, content}}
 
 2. Comment service
    * **Port**: 4001
@@ -36,6 +39,12 @@ A simple site that provides the following features
         | **job** | create a new comment on the post with give id |  
         | **body** | {content: string} |  
         | **reponse** | Post object created |  
+   * **Events of intesert**:
+     * *post created*
+     * *Comment moderated*
+   * **Events emitted**:
+     * *Comment created*: {type: `'commentCreated'`, content: {postId, id, content, status}}
+     * *Comment updated*: {type: `'commentUpdated'`, content: {postId, id, content, status}}
 
 3. Query service
    * **Port**: 4002
@@ -45,6 +54,19 @@ A simple site that provides the following features
         | **job** | Get all posts and their comments |
         | **body** | {content: string} |  
         | **reponse** | [{id, content, comments: {id, content}}] |
+   * **Events of intesert**:
+     * *post created*
+     * *Comment created*
+     * *Comment updated*
+   * **Events emitted**: None
+
+4. Moderation service
+   * **Port**: 4100
+   * **routes**: No routes
+   * **Events of intesert**:
+     * *Comment created*
+   * **Events emitted**:
+     * *Comment moderated*: {type: `'commentModerated'`, content: {postId, id, content, status}}
 
 ![demo](demo.png)
 

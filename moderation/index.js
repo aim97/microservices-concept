@@ -16,14 +16,16 @@ const filters = [
   (msg) => msg.includes('orange'),
 ]
 
+const handleNewComment = (comment) => R.ifElse(
+  R.converge(R.and(R.T), filters),
+  () => emitEvent('commentedModerated', {...comment, status: 'rejected'}),
+  () => emitEvent('commentedModerated', {...comment, status: 'accepted'}),
+)(comment.content);
+
 const handleEvent = ({type, content:comment}) => R.cond([
     [
       R.equals('commentCreated'), 
-      () => R.ifElse(
-        R.converge(R.and(R.T), filters),
-        () => emitEvent('commentedModerated', {...comment, status: 'accepted'}),
-        () => emitEvent('commentedModerated', {...comment, status: 'rejected'}),
-      )(comment.content)
+      () => handleNewComment(comment)
     ],
     [
       R.T,

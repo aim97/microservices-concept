@@ -15,6 +15,26 @@ const comments = [];
 
 const emitEvent = (type, content) => axios.post('http://localhost:5000/event', {type, content});
 
+const handleEvent = ({type, content}) => R.cond([
+  [
+    R.equals('postCreated'),
+    () => {
+      const {id: postId} = content;
+      postIds.push(postId);
+    },
+  ],
+  [
+    R.equals('commentedModerated'),
+    () => {
+      const { id } = content;
+      const idx = comments.find((comment) => comment.id === id);
+      comments.splice(idx, 1);
+      comments.push(content);
+      emitEvent('commentUpdated', content);
+    },
+  ],
+])(type);
+
 // routes
 app.post('/posts/:id', async (req, res) => {
   const postId = req.params.id;
@@ -34,17 +54,17 @@ app.post('/posts/:id', async (req, res) => {
   }
 });
 
+
 app.post('/event', (req, res) => {
-  const {type, content } = req.body;
   console.log(req.body);
-  if (type === 'postCreated') {
-    const {id: postId} = content;
-    postIds.push(postId);
-  }
+  handleEvent(req.body); 
   console.log(postIds);
   res.status(200).send({});
 });
 
-app.listen(4001, () => {
-  console.log('listening on port 4001');
+app.listen(4001, async () => {
+  console.log('listening on port 4001\nInitializing service ...');
+  const res = await axios.get('http://localhost:5000/hist');
+  console.log(res.data);
+  R.map(handleEvent, res.data);
 });
