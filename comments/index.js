@@ -21,7 +21,7 @@ app.post('/posts/:id', async (req, res) => {
     const id = randomBytes(4).toString('hex');
     const { content } = req.body;
     const comment = {
-      id, postId, content,
+      id, postId, content, status: 'pending'
     }
     comments.push(comment);
     await axios.post('http://localhost:5000/event', {type: 'commentCreated', content: comment});
