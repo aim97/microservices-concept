@@ -3,13 +3,14 @@ import ListItemText from '@material-ui/core/ListItemText';
 import SubdirectoryArrowRightIcon from '@material-ui/icons/SubdirectoryArrowRight';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 
-const Comment = ({content}) => {
+const Comment = ({content, status}) => {
+  const msg = status === 'pending'? 'Bending Moderation ...': content;
   return (<ListItem>
     <ListItemIcon>
       <SubdirectoryArrowRightIcon />
     </ListItemIcon>
     <ListItemText
-      primary={content}
+      primary={msg}
     />
   </ListItem>);
 };

@@ -13,6 +13,8 @@ app.use(json());
 const postIds = []
 const comments = [];
 
+const emitEvent = (type, content) => axios.post('http://localhost:5000/event', {type, content});
+
 // routes
 app.post('/posts/:id', async (req, res) => {
   const postId = req.params.id;
@@ -21,10 +23,10 @@ app.post('/posts/:id', async (req, res) => {
     const id = randomBytes(4).toString('hex');
     const { content } = req.body;
     const comment = {
-      id, postId, content, status: 'pending'
+      id, postId, content, status: 'pending',
     }
     comments.push(comment);
-    await axios.post('http://localhost:5000/event', {type: 'commentCreated', content: comment});
+    await emitEvent('commentCreated', comment);
 
     res.status(200).send(comment);
   } else {

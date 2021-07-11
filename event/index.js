@@ -14,6 +14,7 @@ const servicesEventRoutes = [
   'http://localhost:4000/event', // post
   'http://localhost:4001/event', // comments
   'http://localhost:4002/event', // query
+  'http://localhost:4100/event', // moderation
 ]
 
 // add a route to send all previous event to a service that just joined

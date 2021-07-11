@@ -2,27 +2,44 @@ import App from 'express';
 import axios from 'axios';
 import cors from 'cors';
 import { json } from 'body-parser';
-import { randomBytes } from 'crypto';
+// import { randomBytes } from 'crypto';
+import R from 'ramda';
 
 const app = App();
 
 app.use(cors());
 app.use(json());
 
+const emitEvent = (type, content) => axios.post('http://localhost:5000/event', {type, content});
 
+const filters = [
+  (msg) => msg.includes('orange'),
+]
 
-const handleEvent = async ({type, content:comment}) => {
-  if (type === 'commentCreated') {
-    const { content } = comment;
-  } 
-}
+const handleEvent = ({type, content:comment}) => R.cond([
+    [
+      R.equals('commentCreated'), 
+      () => R.ifElse(
+        R.converge(R.and(R.T), filters),
+        () => emitEvent('commentedModerated', {...comment, status: 'accepted'}),
+        () => emitEvent('commentedModerated', {...comment, status: 'rejected'}),
+      )(comment.content)
+    ],
+    [
+      R.T,
+      () => new Promise((resolve, reject) => {
+        console.log(`I don't care about ${type} events`)
+        resolve();
+      }),
+    ]
+  ])(type)
 
-// routes
-// this service allows
 app.post('/event', (req, res) => {
-  
+   handleEvent(req.body).then(() => res.status(200).send({})).catch(() => {
+     console.log('We could not emit event to event bus for some reason, but who cares (not me XD)');
+   })
 });
 
 app.listen(4100, () => {
- console.log('listening on port 4000');
+ console.log('listening on port 4100');
 });
